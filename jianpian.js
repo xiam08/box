@@ -1,5 +1,4 @@
-﻿
-async function init(cfg) {
+﻿async function init(cfg) {
 cfg.skey = '';
 cfg.stype = '3';
 }
@@ -21,20 +20,20 @@ async function home (filter) {
 
 //主页推荐
 async function homeVod() {
-let html = await req(`${host}/api/slide/list?pos_id=88`,{headers: { 'User-Agent':UA,'Referer':host}});
-let res = JSON.parse(html.content);
+    let html = await req(`${host}/api/slide/list?pos_id=88`, {headers: { 'User-Agent':UA,'Referer':host}});
+    let res = JSON.parse(html.content);
 
-let videos = res.data.map(item => ({
-    vod_id: item.jump_id,
-    vod_name: item.title,
-    vod_pic: `${imghost}${item.thumbnail}`,
-    vod_remarks: "",
-    style: {"type": "rect", "ratio": 1.33}
- }))
+    let videos = res.data.map(item => ({
+        vod_id: item.jump_id,
+        vod_name: item.title,
+        vod_pic: `${imghost}${item.thumbnail}`,
+        vod_remarks: "", // 保持为空，因为原始数据没有此字段
+        // 已移除 style 字段，通常 homeVod 不需要这个
+    }));
 
-return JSON.stringify({
-    list: videos,
-});
+    return JSON.stringify({
+        list: videos,
+    });
 }
 
 //分类
@@ -66,7 +65,7 @@ async function detail (id) {
 
   let res = JSON.parse(html.content).data;
   let play_from = res.source_list_source.map(item => item.name).join('$$$').replace(/常规线路/g,'边下边播');
-  let play_url = res.source_list_source.map(play => 
+  let play_url = res.source_list_source.map(play =>
     play.source_list.map(({ source_name, url }) => `${source_name}$${url}`).join('#')
 ).join('$$$');
 
@@ -76,9 +75,9 @@ var vod = [{
     "vod_area": res.area,
     "vod_remarks": res.mask,
     "vod_content": res.description,
-    "vod_play_from": play_from, 
+    "vod_play_from": play_from,
     "vod_play_url": play_url
-    }];  
+    }];
 
   return JSON.stringify ({
     list: vod
